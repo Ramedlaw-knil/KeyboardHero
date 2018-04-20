@@ -13,6 +13,7 @@
 // start of program code
 int main(void)
 {
+	// Start Game
 	return Game();
 }
 

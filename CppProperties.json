@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "name": "x86-Debug",
+      "includePath": [
+        "${workspaceRoot}\\source\\**",
+        "${workspaceRoot}\\..\\..\\gcc6809\\vectrex\\include\\**"
+      ],
+      "intelliSenseMode": "windows-msvc-x86"
+    }
+  ]
+}

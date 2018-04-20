@@ -1,0 +1,51 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "make build",
+      "appliesTo": "*",
+      "type": "launch",
+      "command": "${env.COMSPEC}",
+      "args": [
+        "make"
+      ]
+    },
+	,
+    {
+      "taskName": "make run",
+      "appliesTo": "*",
+      "type": "launch",
+      "command": "${env.COMSPEC}",
+      "args": [
+        "make run"
+      ]
+    },
+    {
+      "taskName": "make build and run",
+      "appliesTo": "*",
+      "type": "launch",
+      "command": "${env.COMSPEC}",
+      "args": [
+        "make && make run"
+      ]
+    },
+    {
+      "taskName": "make build optimized",
+      "appliesTo": "*",
+      "type": "launch",
+      "command": "${env.COMSPEC}",
+      "args": [
+        "make_opt"
+      ]
+    },
+    {
+      "taskName": "make build optimized and run",
+      "appliesTo": "*",
+      "type": "launch",
+      "command": "${env.COMSPEC}",
+      "args": [
+        "make_opt && make run"
+      ]
+    }
+  ]
+}

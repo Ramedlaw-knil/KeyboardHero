@@ -47,7 +47,7 @@ inline void GameLoop()
 		
 		DrawNotes();
 		
-		//Sound();
+		Sound();
 	}
 }
 

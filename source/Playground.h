@@ -13,106 +13,108 @@ extern int Pressed;
 
 const Vector vectorsKey[] =
 {
-	{{ -10, -15}}, // Move
-	{{  20,   0}}, // Draw
-	{{   0,  30}},
-	{{ -20,   0}},
-	{{   0, -30}}
+	{{ -20, -30}}, // Move
+	{{  40,   0}}, // Draw
+	{{   0,  60}},
+	{{ -40,   0}},
+	{{   0, -60}}
 };
 
 const Vector vectorsNote[] = 
 {
-	{{  20,   0}}, // Draw
-	{{   0,  20}},
-	{{ -20,   0}},
-	{{   0, -20}}
+	{{  40,   0}}, // Draw
+	{{   0,  40}},
+	{{ -40,   0}},
+	{{   0, -40}}
 }; 
-
-
-// const Vector vectorsKey[] =
-// {
-// 	{{  -4,  -6}}, // Move
-// 	{{   8,   0}}, // Draw
-// 	{{   0,  12}},
-// 	{{  -8,   0}},
-// 	{{   0, -12}}
-// };
-
-// const Vector vectorsNote[] = 
-// {
-// 	{{ -4,  -4}}, // Move
-// 	{{  8,   0}}, // Draw
-// 	{{   0,  8}},
-// 	{{ -8,   0}},
-// 	{{   0, -8}}
-// }; 
 
 const VectorList keyVecList =  
 {	
-	.size = 5,
+	.end  = (Point*)(vectorsKey + 5),
 	.vecs = vectorsKey
 };
 
 const VectorList noteVecList =  
 {	
-	.size = 4,
+	.end  = (Point*)(vectorsNote + 4),
 	.vecs = vectorsNote
 };
 
+//Variables
+const Vector* Vectoren ;
+Point* I;
+static inline __attribute__((always_inline)) 
+void DrawKey()
+{
+	Vectoren = keyVecList.vecs;
+
+	Moveto_dd(Vectoren->d);
+
+	Point* end = keyVecList.end;
+	I = (Point*)(Vectoren + 1);
+
+	while(I != end)
+	{
+	 	Draw_Line_d(I->y,I->x);
+	  	I++;
+	}
+}
+static inline __attribute__((always_inline)) 
+void DrawNote()
+{
+	Vectoren = noteVecList.vecs;
+
+	Point* end = noteVecList.end;
+	I = (Point*)(Vectoren);
+
+	while(I != end)
+	{
+	 	Draw_Line_d(I->y,I->x);
+	  	I++;
+	}
+}
 
 
 // First Key Point
 const int yKeyPos = -118; 
 const int xKeyPos = 100; 
 
+unsigned int keyScales[] =  {50, 45};// 45 when pressed
+
 // Draw Keys and Lines for the Notes
-inline static void DrawPlayground()
+static inline __attribute__((always_inline)) 
+void DrawPlayground()
 {	
-	VIA_t1_cnt_lo = 110;
+	VIA_t1_cnt_lo = 100;
 	Moveto_d(yKeyPos, xKeyPos);
 
 	for(int i = 8; i > 0; i = i >> 1)
 	{
-		if(Vec_Btn_State & i)
-		{
-			VIA_t1_cnt_lo = 95;
-		}
 
+		VIA_t1_cnt_lo  = keyScales[Vec_Btn_State & i];
 
 		// Draw Key
-		DrawVecListWithMove(&keyVecList);
+		DrawKey();
 		// Center in Key
-		Moveto_dd(0x0A0F);//10, 15);
+		Moveto_dd(0x141E);
 		
-		// better to set it everytime 
-		// alternative would be to set in the else branch
-		// Then 110 is the standard scale and needs to be reset
-		// after 100 was set for the Note Lines
-		VIA_t1_cnt_lo = 110;
 		
 		if(i & 0b00001010)
 		{
-			Draw_Line_d(125, 0);
+			VIA_t1_cnt_lo = 200;
 			Draw_Line_d(125, 0);
 
-			Moveto_dd((long)0x00CE);	
+			VIA_t1_cnt_lo = 50;
+			Moveto_dd((long)0x009C);	
 
-			Draw_Line_d(-125, 0);
+			VIA_t1_cnt_lo = 200;
 			Draw_Line_d(-125, 0);
 		}
 		else
 		{
-			Moveto_dd((long)0x00CE);
+			VIA_t1_cnt_lo = 50;
+			Moveto_dd((long)0x009C);
 		}
-
-		// // Draw Line for Notes
-		// Draw_Line_d(125, 0);
-		// Draw_Line_d(125, 0);
-		
-		// // TODO: umschreiben
-		// // Bewegung unnötig beim letzten durchlauf
-		// Moveto_dd((long)0x8300);//-125, 0);
-		// Moveto_dd((long)0x83CE);//-125, -50);
 	}
 }
 
@@ -136,7 +138,8 @@ const int FourthRow = 90;
 
 const int firstNotePos = -128; 
 
-inline static void DrawNotes()
+static inline __attribute__((always_inline)) 
+void DrawNotes()
 {
 	channelCounter = channel3Counter + 1;
 	durationSum = duration3;
@@ -144,7 +147,10 @@ inline static void DrawNotes()
 	reset_beam();
 	
 	// Draw First Note
-	Moveto_d((int)duration3 + firstNotePos, FourthRow);
+	VIA_t1_cnt_lo = 100;
+	Moveto_d((int)durationSum + firstNotePos, FourthRow);
+	
+	VIA_t1_cnt_lo = 50;
 	DrawVecList(&noteVecList);
 
 
@@ -156,22 +162,23 @@ inline static void DrawNotes()
 		// letzte reihe merken?
 		// reihe nach höhe der note auswählen?
 		
+		VIA_t1_cnt_lo = 100;
 		durationBuffer = leadDurations[channelCounter];
+		Moveto_d((int)durationBuffer << 1, 0);
 
-		if(note != 0)
+		if(note != 0) // 0 = Pause
 		{	
-			Moveto_d((int)durationBuffer << 1, 0);
-			
-			DrawVecList(&noteVecList);
+			// Hier wird festgetellt ob die Note getroffen wurde,
+			// wenn getroffen, variable auf true setzen
+			// und in SoundPlayer Variable abfragen und abspielen
+			VIA_t1_cnt_lo = 50;
+			DrawNote();
 		}
 		
 		
 		++channelCounter;
 		durationSum += durationBuffer;
 	}
-	// Hier wird festgetellt ob die Note getroffen wurde,
-	// wenn getroffen, variable auf true setzen
-	// und in SoundPlayer Variable abfragen und abspielen
 }
 
 

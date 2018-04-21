@@ -45,7 +45,8 @@ unsigned int duration;
 unsigned int duration2;
 unsigned int duration3;
 
-static inline void Sound()
+static inline __attribute__((always_inline)) 
+void Sound()
 {
 
 	play_tune(0, rhythm1Notes[channel1Counter], 200);

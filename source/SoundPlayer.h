@@ -9,16 +9,6 @@ const Arrangement* SelectedSong;
 int Pressed;
 
 
-//--------------------------- Alter Code -------------------------------------------
-// counter für:
-// derzeitige Note              = wird nach ablauf der Dauer inkrementiert
-unsigned int channel1Counter = 0;
-unsigned int channel2Counter = 0;
-unsigned int channel3Counter = 0;
-// für dauer der Note           = wird jede Runde dekrementiert, bei aublauf neu gesetzt
-unsigned int duration;
-unsigned int duration2;
-unsigned int duration3;
 // für stelle im Timbre         = wird jede runde dekrementiert
 // für die Stelle der Amplitude = wird jede runde dekrementiert, bei aublauf bleibts auf 0
 
@@ -32,37 +22,54 @@ void play_tune(unsigned int channel, long unsigned int frequency, unsigned int v
 	//~ unsigned int y =  (unsigned int)*((&frequency) + 1);
 	unsigned int y =  (unsigned int) (frequency >> 8);
 	Sound_Byte(cha, y);
+
 	// When Frequency equals 0, the channel will be muted
-	Sound_Byte(channel + 8U, (unsigned int)(frequency != 0UL) * volume);
+	Sound_Byte(channel + 8U, frequency ? volume : 0U);
 	Sound_Byte(7, 0b00111000);
 }
 
-unsigned long int note;
+//Globals
+//Globals
+const unsigned int* rhythm1Durations;
+const unsigned int* rhythm2Durations;
+const unsigned int* leadDurations;
+
+const unsigned long int* rhythm1Notes;
+const unsigned long int* rhythm2Notes;
+const unsigned long int* leadNotes;
+
+unsigned int channel1Counter = 0;
+unsigned int channel2Counter = 0;
+unsigned int channel3Counter = 0;
+unsigned int duration;
+unsigned int duration2;
+unsigned int duration3;
+
 static inline void Sound()
 {
 
-	play_tune(0, SelectedSong->Rhythm1->notes[channel1Counter], 200);
-	play_tune(1, SelectedSong->Rhythm2->notes[channel2Counter], 200);
+	play_tune(0, rhythm1Notes[channel1Counter], 200);
+	play_tune(1, rhythm2Notes[channel2Counter], 200);
 	// Do check if the right Note was played
-	note = Pressed ? SelectedSong->Lead->notes[channel3Counter] : 0UL;
-	play_tune(2, note, 200);
+
+	play_tune(2, Pressed ? leadNotes[channel3Counter] : 0UL, 200);
 	
 	if(duration == 0)
 	{
 		++channel1Counter;
-		duration = SelectedSong->Rhythm1->noteDurations[channel1Counter]; // optimization: noteDuration in extra variable -> every differentiation does an ldx
+		duration = rhythm1Durations[channel1Counter]; // optimization: noteDuration in extra variable -> every differentiation does an ldx
 	}
 		
 	if(duration2 == 0)
 	{
 		++channel2Counter;
-		duration2 = SelectedSong->Rhythm2->noteDurations[channel2Counter];
+		duration2 = rhythm2Durations[channel2Counter];
 	}
 	
 	if(duration3 == 0)
 	{
 		++channel3Counter;
-		duration3 = SelectedSong->Lead->noteDurations[channel3Counter];
+		duration3 = leadDurations[channel3Counter];
 		// Prüfen ob das Lied zuende ist
 	}
 	

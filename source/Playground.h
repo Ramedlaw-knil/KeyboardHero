@@ -6,13 +6,11 @@
 extern const Arrangement* SelectedSong;
 extern unsigned int channel3Counter;
 extern unsigned int duration3;
+extern int Pressed;
 
 #include "../../utils/utils.h"
 
 
-// Key 
-// Width = 30
-// Height = 20
 const Vector vectorsKey[] =
 {
 	{{ -10, -15}}, // Move
@@ -22,18 +20,32 @@ const Vector vectorsKey[] =
 	{{   0, -30}}
 };
 
-
-// change scaling by distance from Key
-// Width = 20
-// Height = 20
 const Vector vectorsNote[] = 
 {
-	{{ -10, -10}}, // Move
 	{{  20,   0}}, // Draw
 	{{   0,  20}},
 	{{ -20,   0}},
 	{{   0, -20}}
 }; 
+
+
+// const Vector vectorsKey[] =
+// {
+// 	{{  -4,  -6}}, // Move
+// 	{{   8,   0}}, // Draw
+// 	{{   0,  12}},
+// 	{{  -8,   0}},
+// 	{{   0, -12}}
+// };
+
+// const Vector vectorsNote[] = 
+// {
+// 	{{ -4,  -4}}, // Move
+// 	{{  8,   0}}, // Draw
+// 	{{   0,  8}},
+// 	{{ -8,   0}},
+// 	{{   0, -8}}
+// }; 
 
 const VectorList keyVecList =  
 {	
@@ -43,14 +55,11 @@ const VectorList keyVecList =
 
 const VectorList noteVecList =  
 {	
-	.size = 5,
+	.size = 4,
 	.vecs = vectorsNote
 };
 
 
-
-
-const int Divider = -50;
 
 // First Key Point
 const int yKeyPos = -118; 
@@ -69,11 +78,11 @@ inline static void DrawPlayground()
 			VIA_t1_cnt_lo = 95;
 		}
 
-		// Draw Key
-		DrawVecList(&keyVecList);
 
+		// Draw Key
+		DrawVecListWithMove(&keyVecList);
 		// Center in Key
-		Moveto_d(10, 15);
+		Moveto_dd(0x0A0F);//10, 15);
 		
 		// better to set it everytime 
 		// alternative would be to set in the else branch
@@ -81,66 +90,84 @@ inline static void DrawPlayground()
 		// after 100 was set for the Note Lines
 		VIA_t1_cnt_lo = 110;
 		
-		// Draw Line for Notes
-		Draw_Line_d(125, 0);
-		Draw_Line_d(125, 0);
+		if(i & 0b00001010)
+		{
+			Draw_Line_d(125, 0);
+			Draw_Line_d(125, 0);
+
+			Moveto_dd((long)0x00CE);	
+
+			Draw_Line_d(-125, 0);
+			Draw_Line_d(-125, 0);
+		}
+		else
+		{
+			Moveto_dd((long)0x00CE);
+		}
+
+		// // Draw Line for Notes
+		// Draw_Line_d(125, 0);
+		// Draw_Line_d(125, 0);
 		
-		// TODO: umschreiben
-		// Bewegung unnötig beim letzten durchlauf
-		Moveto_d(-125, 0);
-		Moveto_d(-125, Divider);
+		// // TODO: umschreiben
+		// // Bewegung unnötig beim letzten durchlauf
+		// Moveto_dd((long)0x8300);//-125, 0);
+		// Moveto_dd((long)0x83CE);//-125, -50);
 	}
 }
 
 // Draw all Notes until an specified duration is reached:
 // sum duration of drawn notes and when they exceed an specified number, 
 // the function is finished
+// Globals
+extern const unsigned int* leadDurations;
+extern const unsigned long int* leadNotes;
+// Variables 
 unsigned long int note;
 int toggle = -50;
-long int durationSum;
+unsigned int durationSum;
+unsigned int durationBuffer; 
 unsigned int channelCounter;
 
-const int FirstRow = -50;
-const int SecondRow = 0;
-const int ThirdRow = 50;
-const int FourthRow = 100;
+const int FirstRow = -60;
+const int SecondRow = -10;
+const int ThirdRow = 40;
+const int FourthRow = 90;
+
+const int firstNotePos = -128; 
+
 inline static void DrawNotes()
 {
-	const unsigned long int* notes = SelectedSong->Lead->notes;
-	const unsigned int* durations = SelectedSong->Lead->noteDurations; 
 	channelCounter = channel3Counter + 1;
 	durationSum = duration3;
 	
 	reset_beam();
-	// Move to first position and save last set row
-	Moveto_d(yKeyPos,xKeyPos);
 	
-	Moveto_d((int)duration3, 0);
+	// Draw First Note
+	Moveto_d((int)duration3 + firstNotePos, FourthRow);
 	DrawVecList(&noteVecList);
-	Moveto_d(10, 10);
 
-// FFFF mean that the song ended ---- TODO: note must be initializd
-	while(durationSum < 250U || note != 0xFFFF)
+
+	while(durationSum < 125U)
 	{
-		note = notes[channelCounter];
-		
+		note = leadNotes[channelCounter];
 		
 		// extra variable für letzte gespielte note?
 		// letzte reihe merken?
 		// reihe nach höhe der note auswählen?
 		
+		durationBuffer = leadDurations[channelCounter];
+
 		if(note != 0)
 		{	
-			Moveto_d((int)durations[channel1Counter], 0);
-			
+			Moveto_d((int)durationBuffer << 1, 0);
 			
 			DrawVecList(&noteVecList);
-			Moveto_d(10, 10);
 		}
 		
 		
 		++channelCounter;
-		durationSum += durations[channel1Counter];
+		durationSum += durationBuffer;
 	}
 	// Hier wird festgetellt ob die Note getroffen wurde,
 	// wenn getroffen, variable auf true setzen

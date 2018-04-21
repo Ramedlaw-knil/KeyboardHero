@@ -1,7 +1,6 @@
 
 #include "game.h"
 #include "vectrex.h"
-#include "Playground.h"
 
 #include "../../utils/utils.h"
 
@@ -20,6 +19,14 @@ inline void GameInit()
 	duration  = SelectedSong->Rhythm1->noteDurations[0];
 	duration2 = SelectedSong->Rhythm2->noteDurations[0];
 	duration3 = SelectedSong->Lead->noteDurations[0];
+
+	rhythm1Durations = SelectedSong->Rhythm1->noteDurations;
+	rhythm2Durations = SelectedSong->Rhythm2->noteDurations;
+	leadDurations = SelectedSong->Lead->noteDurations;
+	
+	rhythm1Notes = SelectedSong->Rhythm1->notes;
+	rhythm2Notes = SelectedSong->Rhythm2->notes;
+	leadNotes = SelectedSong->Lead->notes;
 }
 
 inline void GameLoop()
@@ -31,17 +38,16 @@ inline void GameLoop()
 	{
 		// Synchronize loop
 		Wait_Recal();
-		Reset0Ref();
+		reset_beam();
 		
 		Read_Btns();
-		
 		
 		// Get Pressed Buttons
 		DrawPlayground();
 		
 		DrawNotes();
 		
-		Sound();
+		//Sound();
 	}
 }
 

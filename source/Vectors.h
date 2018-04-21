@@ -20,28 +20,37 @@ typedef struct
 	const Vector* vecs;
 } VectorList;
 
-inline static void Move(const Vector* vec)
-{
-	Moveto_dd(vec->d);
-}
-
-inline static void Draw(const Vector* vec)
-{
-	Draw_Line_d(vec->point.y,vec->point.x);
-}
-
 // First member in array is for positioning the start point 
 // of the sprite
-void DrawVecList(const VectorList* vecList)
+// Variables
+const Vector* Vectoren ;
+Point point;
+void DrawVecListWithMove(const VectorList* vecList)
 {
-	Moveto_dd(vecList->vecs->d);
+	Vectoren = vecList->vecs;
+
+	Moveto_dd(Vectoren->d);
 	unsigned int i = 1;
 	
 	while(i < vecList->size)
 	{
-		Draw(&vecList->vecs[i]);
+		point = Vectoren[i].point;
+		Draw_Line_d(point.y,point.x);
 		i++;
 	}
 }
 
+void DrawVecList(const VectorList* vecList)
+{
+	Vectoren = vecList->vecs;
+
+	unsigned int i = 0;
+	
+	while(i < vecList->size)
+	{
+		point = Vectoren[i].point;
+		Draw_Line_d(point.y,point.x);
+		i++;
+	}
+}
 

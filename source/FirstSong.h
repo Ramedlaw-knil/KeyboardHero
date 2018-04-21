@@ -48,6 +48,8 @@ const unsigned long int frequencys3[] =
 	
 	
 	pause,pause,pause,pause,
+	pause,pause,pause,pause,
+	pause,pause,pause,pause,
 	pause,pause,pause,pause
 };
 
@@ -62,6 +64,8 @@ const unsigned int durations3[] =
 	eight,eight,eight,eight,
 	eight,eight,eight,eight,
 	
+	eight,eight,eight,eight,
+	eight,eight,eight,eight,
 	eight,eight,eight,eight,
 	eight,eight,eight,eight
 };

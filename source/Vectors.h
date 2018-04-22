@@ -17,41 +17,6 @@ typedef union
 
 typedef struct 
 {
-	Point* end;
-	const Vector* vecs;
+	int length;
+	const Vector vecs[];
 } VectorList;
-
-
-// Variables
-const Vector* Vectoren ;
-Point* I;
-
-void DrawVecListWithMove(const VectorList* vecList)
-{
-	Vectoren = vecList->vecs;
-
-	Moveto_dd(Vectoren->d);
-
-	Point* end = vecList->end;
-	I = (Point*)(Vectoren + 1);
-
-	while(I != end)
-	{
-	 	Draw_Line_d(I->y,I->x);
-	  	I++;
-	}
-}
-
-void DrawVecList(const VectorList* vecList)
-{
-	Vectoren = vecList->vecs;
-
-	Point* end = vecList->end;
-	I = (Point*)(Vectoren);
-
-	while(I != end)
-	{
-	 	Draw_Line_d(I->y,I->x);
-	  	I++;
-	}
-}

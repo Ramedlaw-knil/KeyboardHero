@@ -49,26 +49,26 @@ static inline __attribute__((always_inline))
 void Sound()
 {
 
-	play_tune(0, rhythm1Notes[channel1Counter], 200);
-	play_tune(1, rhythm2Notes[channel2Counter], 200);
-	// Do check if the right Note was played
-
-	play_tune(2, Pressed ? leadNotes[channel3Counter] : 0UL, 200);
-	
 	if(duration == 0)
 	{
+		play_tune(0, rhythm1Notes[channel1Counter], 200);
 		++channel1Counter;
 		duration = rhythm1Durations[channel1Counter]; // optimization: noteDuration in extra variable -> every differentiation does an ldx
 	}
 		
 	if(duration2 == 0)
 	{
+		play_tune(1, rhythm2Notes[channel2Counter], 200);
 		++channel2Counter;
 		duration2 = rhythm2Durations[channel2Counter];
 	}
 	
 	if(duration3 == 0)
 	{
+		// Do check if the right Note was played
+		play_tune(2, Pressed ? leadNotes[channel3Counter] : 0UL, 200);
+		Pressed = 0;
+
 		++channel3Counter;
 		duration3 = leadDurations[channel3Counter];
 		// Prüfen ob das Lied zuende ist

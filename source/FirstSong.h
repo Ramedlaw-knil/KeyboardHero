@@ -36,6 +36,8 @@ const unsigned int durations2[] =
 
 const unsigned long int frequencys3[] = 
 {
+	pause,pause,pause,pause,
+
 	C5, A4, E5, A4, 
 	E5, F5, A4, D5, 
 	C4, D5, E5, D5,
@@ -55,6 +57,8 @@ const unsigned long int frequencys3[] =
 
 const unsigned int durations3[] =
 {
+	eight,eight,eight,eight,
+
 	eight,eight,eight,eight,
 	eight,eight,eight,eight,
 	eight,eight,eight,eight,

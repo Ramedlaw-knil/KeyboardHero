@@ -124,24 +124,18 @@ extern const unsigned long int* leadNotes;
 // Variables 
 unsigned long int note;
 unsigned int durationSum;
-unsigned int durationBuffer; 
 unsigned int channelCounter;
 
-// const int FirstRow = -60;
-// const int SecondRow = -10;
-// const int ThirdRow = 40;
-// const int FourthRow = 90;
-
-const int FirstRow = -30;
-const int SecondRow = -5;
-const int ThirdRow = 20;
-const int FourthRow = 45;
 
 const int Rows[] = {-30, -5, 20, 45};
+unsigned int buttonCode[] = {0b0001, 0b0010, 0b0100, 0b1000};
+
+unsigned int* Button[] = {&Vec_Button_1_1, &Vec_Button_1_2, &Vec_Button_1_3, &Vec_Button_1_4}; 
 
 unsigned long lastNote;
 int passiveRow = 0;
 int aktiveRow = 0;
+
 
 int addsub[] = {1,-1};
 
@@ -149,9 +143,9 @@ static inline __attribute__((always_inline))
 void DrawNotes()
 {
 	// Pack that in a function?
-	if(duration3 < 3) // smaller then 3 for tolerance
+	if(duration3 < 5) // smaller then 5 for tolerance
 	{
-		if(!Pressed && Vec_Btn_State == (aktiveRow & 0b11))
+		if(!Pressed && Vec_Btn_State == buttonCode[aktiveRow & 0b11])
 		{
 			Pressed = 1;
 		}
@@ -163,12 +157,13 @@ void DrawNotes()
 
 
 
-	channelCounter = channel3Counter + 1;
+	channelCounter = channel3Counter;
 	durationSum = duration3;
 
 
-	passiveRow = aktiveRow - 1;
-	if(durationSum == 0)
+	passiveRow = aktiveRow - 1; // aktivrow -1 so it stays on the same 
+
+	if(durationSum == 0 && leadNotes[channelCounter] != 0)
 	{
 		aktiveRow += addsub[leadNotes[channelCounter] < leadNotes[channelCounter + 1]]; 
 	}
